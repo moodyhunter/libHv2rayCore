@@ -1,0 +1,5 @@
+{
+  "target": "libHvStats.so",
+  "buildmode": "c-shared",
+  "sources": ["main.go", "cgo.go"]
+}

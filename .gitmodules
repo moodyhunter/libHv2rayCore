@@ -1,0 +1,6 @@
+[submodule "deps/v2ray-core"]
+	path = deps/v2ray-core
+	url = https://github.com/moodyhunter/v2ray-core-tunfd
+[submodule "deps/gvisor"]
+	path = deps/gvisor
+	url = https://github.com/moodyhunter/gvisor-hmos-hack

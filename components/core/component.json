@@ -1,0 +1,5 @@
+{
+  "target": "libHvCore.a",
+  "buildmode": "c-archive",
+  "sources": ["core.go", "cgo.go"]
+}

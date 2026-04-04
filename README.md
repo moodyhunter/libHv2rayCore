@@ -1,3 +1,3 @@
 # libHv2rayCore
 
-core component for Hv2ray
+core components of Hv2ray

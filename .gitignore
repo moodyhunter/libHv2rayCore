@@ -1,0 +1,9 @@
+.vscode/
+
+# ignore all build artifacts in components
+*.h
+*.a
+*.so
+
+# ignore the final product archive
+product.tar.gz
