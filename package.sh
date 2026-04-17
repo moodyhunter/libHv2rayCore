@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 pushd "$SCRIPT_DIR/product"
 
-rm $SCRIPT_DIR/product.tar.gz
+rm $SCRIPT_DIR/product.tar.gz 2>/dev/null || true
 tar -czvf $SCRIPT_DIR/product.tar.gz .
 popd
 

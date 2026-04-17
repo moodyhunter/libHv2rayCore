@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+   branches:
+     - main
+     - ci-dev
+  workflow_dispatch:
+
+# Cancel any in-progress run for the same branch/PR so that queued commits
+# on a single self-hosted runner do not pile up.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least-privilege token – no writes needed for a basic CI check.
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Build libHv2rayCore
+    runs-on: self-hosted
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Print runner environment info
+        shell: bash
+        run: |
+          echo "=== Runner info ==="
+          echo "OS:          $(uname -a)"
+          echo "Hostname:    $(hostname)"
+          echo "Working dir: $(pwd)"
+          echo "Git version: $(git --version)"
+          echo "=== Repository ==="
+          echo "Ref:    ${{ github.ref }}"
+          echo "SHA:    ${{ github.sha }}"
+          echo "Actor:  ${{ github.actor }}"
+          echo "Event:  ${{ github.event_name }}"
+          echo "=== Files ==="
+          ls -la
+
+      - name: Verify checkout integrity
+        shell: bash
+        run: |
+          test -f README.md && echo "README.md present – checkout OK" || { echo "ERROR: README.md missing"; exit 1; }
+
+      - name: Build
+        shell: bash
+        run: |
+          echo "Building..."
+          export CUSTOM_GO_PATH='/opt/go'
+          export OHOS_SDK='/opt/ohos-sdk/sdk/default/openharmony'
+
+          export PATH="$HOME/go/bin:$PATH"
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+          # execute generator for stats package
+          pushd components/stats/
+          go generate
+          popd
+
+          ./build.sh
+          ./package.sh
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: package.tar.gz
